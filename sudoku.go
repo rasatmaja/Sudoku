@@ -35,9 +35,9 @@ func printToConsole(currGrid *[][]int) {
  * sudah ada di dalam row yang sama atau tidak
  * jika ada angka yang sama di dalam row maka akan mengembalikan nilai true
  */
-func isNumberInRow(row int, posibleNumber int, currGrid *[][]int) bool {
+func isNumberInRow(currRow int, currColumn int, posibleNumber int, currGrid *[][]int) bool {
 	for column := 0; column < GridSize; column++ {
-		if (*currGrid)[row][column] == posibleNumber {
+		if (column != currColumn) && ((*currGrid)[currRow][column] == posibleNumber) {
 			return true
 		}
 	}
@@ -49,9 +49,9 @@ func isNumberInRow(row int, posibleNumber int, currGrid *[][]int) bool {
  * sudah ada di dalam column yang sama atau tidak
  * jika ada angka yang sama di dalam column maka akan mengembalikan nilai true
  */
-func isNumberInColumn(column int, posibleNumber int, currGrid *[][]int) bool {
+func isNumberInColumn(currRow int, currColumn int, posibleNumber int, currGrid *[][]int) bool {
 	for row := 0; row < GridSize; row++ {
-		if (*currGrid)[row][column] == posibleNumber {
+		if (row != currRow) && ((*currGrid)[row][currColumn] == posibleNumber) {
 			return true
 		}
 	}
@@ -63,16 +63,15 @@ func isNumberInColumn(column int, posibleNumber int, currGrid *[][]int) bool {
  * sudah ada di dalam subGrid yang berukuran 3x3
  * jika ada angka yang sama di dalam subGrid maka akan mengembalikan nilai true
  */
-func isNumberInSubGrid(row int, column int, posibleNumber int, currGrid *[][]int) bool {
-	startIndexRowSubGrid := row - row%SubGridSize
+func isNumberInSubGrid(currRow int, currColumn int, posibleNumber int, currGrid *[][]int) bool {
+	startIndexRowSubGrid := currRow - currRow%SubGridSize
 	endIndexRowSubGrid := startIndexRowSubGrid + SubGridSize
 
-	startIndexColumnSubGrid := column - column%SubGridSize
+	startIndexColumnSubGrid := currColumn - currColumn%SubGridSize
 	endIndexColumnSubGrid := startIndexColumnSubGrid + SubGridSize
-
 	for row := startIndexRowSubGrid; row < endIndexRowSubGrid; row++ {
 		for column := startIndexColumnSubGrid; column < endIndexColumnSubGrid; column++ {
-			if (*currGrid)[row][column] == posibleNumber {
+			if (column != currColumn) && (row != currRow) && ((*currGrid)[row][column] == posibleNumber) {
 				return true
 			}
 		}
@@ -88,8 +87,8 @@ func isNumberInSubGrid(row int, column int, posibleNumber int, currGrid *[][]int
  *
  */
 func isNumberPosible(row int, column int, posibleNumber int, currGrid *[][]int) bool {
-	return !isNumberInRow(row, posibleNumber, currGrid) &&
-		!isNumberInColumn(column, posibleNumber, currGrid) &&
+	return !isNumberInRow(row, column, posibleNumber, currGrid) &&
+		!isNumberInColumn(row, column, posibleNumber, currGrid) &&
 		!isNumberInSubGrid(row, column, posibleNumber, currGrid)
 }
 
@@ -117,6 +116,20 @@ func solve(currGrid *[][]int) bool {
 					}
 				}
 				return false
+			}
+		}
+	}
+	return true
+}
+
+func isPosibleToSolve(currGrid *[][]int) bool {
+	for row := GridStartIndex; row < GridSize; row++ {
+		for column := GridStartIndex; column < GridSize; column++ {
+			currCell := (*currGrid)[row][column]
+			if currCell != EmptyCell {
+				if !isNumberPosible(row, column, currCell, currGrid) {
+					return false
+				}
 			}
 		}
 	}

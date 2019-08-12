@@ -45,23 +45,41 @@ func sudoku(httpResponse http.ResponseWriter, httpRequest *http.Request) {
 	board := inputBoard
 
 	/*
-	 * memanggil method untuk menyelesaikan sudoku
-	 * dan di passing-kan argumen berupan variable yang menyimpan inputan sudoku
-	 * dalam kasus ini akan di passing-kan berupa alamat memory-nya (passing by reference)
+	 * memanggil method untuk memastikan inputan sudoku sudah sesuaiS
 	 *
 	 */
-	solve(&board)
+	if isPosibleToSolve(&board) {
+		/*
+		 * memanggil method untuk menyelesaikan sudoku
+		 * dan di passing-kan argumen berupan variable yang menyimpan inputan sudoku
+		 * dalam kasus ini akan di passing-kan berupa alamat memory-nya (passing by reference)
+		 *
+		 */
+		solve(&board)
 
-	//mencetak hasil board sukodu yang sudah terselesaikan (solved)
-	println(" ")
-	println("ouput sudoku:")
-	printToConsole(&board)
+		//mencetak hasil board sukodu yang sudah terselesaikan (solved)
+		println(" ")
+		println("ouput sudoku:")
+		printToConsole(&board)
 
-	/*
-	 * membuat berupa response data sudoku yang
-	 * sudah selesai ke dalam bentuk JSON
-	 *
-	 */
-	response := board
-	json.NewEncoder(httpResponse).Encode(response)
+		/*
+		 * membuat berupa response data sudoku yang
+		 * sudah selesai ke dalam bentuk JSON
+		 *
+		 */
+		response := board
+		json.NewEncoder(httpResponse).Encode(response)
+	} else {
+		/*
+		 * membuat berupa response input invalid
+		 * ke dalam bentuk JSON
+		 *
+		 */
+		response := "Input invalid. Please check your input"
+		json.NewEncoder(httpResponse).Encode(response)
+
+		println(" ")
+		println(response)
+	}
+
 }
